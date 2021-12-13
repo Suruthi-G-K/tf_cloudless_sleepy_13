@@ -1,36 +1,26 @@
-
-
-# Create an IBM Cloud infrastructure SSH key. You can find the SSH key surfaces in the infrastructure console under Devices > Manage > SSH Keys
-/*
-resource "ibm_compute_ssh_key" "test_key_1" {
-  label      = "test_key_1"
-  public_key = "var.ssh_public_key"
+resource "ibm_is_vpc" "vpc1" {
+  name                      = "vpc1"
+  address_prefix_management = var.address_prefix_management_variable
 }
-*/
-
-# Create an arbitrary local resource
-data "template_file" "test" {
-  template = "AAAA Hello, I am a template. My sample_var value marked as sensitive in tf  = $${sample_var}, while ibmCloudApiKey marked as secured in schematics is $${ibmCloudApiKey}"
-
-  vars = {
-    sample_var = var.sample_var,
-    ibmCloudApiKey = var.ibmCloudApiKey
-  }
+resource "ibm_is_ike_policy" "example" {
+  name                     = "test-ike"
+  authentication_algorithm = var.authentication_algorithm_variable
+  encryption_algorithm     = "3des"
+  dh_group                 = 2
+  ike_version              = 1
+}
+resource "ibm_is_vpc" "vpc2" {
+  name                      = "vpc2"
+  encryption_algorithm = var.encryption_algorithm_variable
+}
+resource "ibm_is_lb" "lb" {
+  name                      = "lb"
+  type = var.type_variable
 }
 
-# This is just to make sure that ibm provider is instantiated
-/* data "ibm_schematics_workspace" "test" {
-  workspace_id = "my-workspace-id"
+resource "ibm_is_lb_listener" "name" {
+  name = "ss"
+  protocol = var.protocol_variable
 }
-*/
 
-resource "null_resource" "sleep" {
-  triggers = {
-    uuid = uuid()
-  }
-
-  provisioner "local-exec" {
-    command = "sleep ${var.sleepy_time}"
-  }
-}
 
